@@ -16,6 +16,6 @@ public:
 
 void Stolb::VisSt()
 {
-	Graphics::Set_brush(color, 1);
-	Graphics::Set_pen(color, 1);
+	Graphics::Set_pen(RGB(0, 191, 255), 3);
+	Graphics::Set_brush(RGB(255, 255, 255), 1);
 }
