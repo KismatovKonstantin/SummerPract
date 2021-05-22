@@ -1,154 +1,110 @@
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
+
 #include <windows.h>
 #include <stdio.h>
-#include <conio.h>
 #include <time.h>
+#include <conio.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <algorithm>
 using namespace std;
+//=============================================================================
 
-HWND hWnd;		//Получение ссылки на окно
-HDC dc;			//Получение контекста устройства
-HPEN hPen;		//Декскриптор пера
-HBRUSH hBrush;	//Дескриптор кисти
-HANDLE HandleCons; //Дескриптор окна
-int wid, heg;
+HWND hWnd;
 
-void Set_pen(HDC dc, int r, int g, int b, int w)
+class Graphics
 {
-	hPen = CreatePen(PS_INSIDEFRAME, w, RGB(r, g, b));	//Создать перо
-	SelectObject(dc, hPen); //Выбирает перо в заданный контекст устройства
+private:
+	static HPEN hPen;
+	static HBRUSH hBrush;
+	static int wid, heg;
+public:
+	static HDC dc;
+	static void Set_pen(COLORREF, int);
+	static void Set_brush(COLORREF, bool);
+	static void Line(int, int, int, int);
+	static void Point(int, int, COLORREF);
+	static void Osi(int, int);
+	static int GetWid() { return wid; }
+	static int GetHeg() { return heg; }
+
+	static void InitGraphics(HWND);
+	~Graphics();
+};
+HBRUSH Graphics::hBrush = NULL;
+HPEN Graphics::hPen = NULL;
+HDC Graphics::dc = NULL;
+int Graphics::wid = 0;
+int Graphics::heg = 0;
+
+void Graphics::InitGraphics(HWND hWnd)
+{
+	dc = GetDC(hWnd);
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	wid = rect.right;
+	heg = rect.bottom;
+	Set_pen(RGB(255, 255, 255), 1);
+	Set_brush(RGB(255, 255, 255), true);
 }
 
-void Set_brush(HDC dc, int r, int g, int b)
+Graphics::~Graphics()
 {
-	if (r == -1)
-		hBrush = ::CreateSolidBrush(HOLLOW_BRUSH); //Создать пустую кисть
-	else
-		hBrush = ::CreateSolidBrush(RGB(r, g, b));	//Создать кисть цвета rgb
-	::SelectObject(dc, hBrush); //Выбирает кисть в заданный контекст устройства
+	DeleteObject(hPen);
+	DeleteObject(hBrush);
+	ReleaseDC(hWnd, dc);
+	DeleteDC(dc);
+}
+void Graphics::Set_pen(COLORREF col, int w)
+{
+	hPen = CreatePen(PS_INSIDEFRAME, w, col);
+	SelectObject(dc, hPen);
+}
+void Graphics::Set_brush(COLORREF col, bool empty)
+{
+	empty ? hBrush = ::CreateSolidBrush(col) :
+		hBrush = ::CreateSolidBrush(NULL_BRUSH);
+	::SelectObject(dc, hBrush);
+}
+void Graphics::Line(int x1, int y1, int x2, int y2)
+{
+	MoveToEx(dc, x1, y1, NULL);
+	LineTo(dc, x2, y2);
+}
+void Graphics::Point(int x, int y, COLORREF col)
+{
+	SetPixel(dc, x, y, col);
+}
+void Graphics::Osi(int wid, int heg)
+{
+	Set_pen(RGB(80, 80, 80), 1);
+	Line(0, heg / 2, wid - 1, heg / 2);
+	Line(wid / 2, 0, wid / 2, heg - 1);
 }
 
-void Line(HDC dc, int x1, int y1, int x2, int y2)
+
+class Stolb
 {
-	MoveToEx(dc, x1, y1, NULL);//начало отрезка
-	LineTo(dc, x2, y2);//конец отрезка
-}
+private:
+	int x0, y0;
+	int h, w;
+	int val;
+	COLORREF color = RGB(255, 255, 255);
 
-//////////////////////////////////////////////////////////////////////////
+public:
+	Stolb();
+	void VisSt();
 
-#define PI 3.14159265359f
-#define KVer 8
-
-int dx1;
-int dy1;
-
-struct Figure
-{
-	POINT pt0; //Координаты центра восьмиугольника
-	POINT topVer[8] = { 0 }; //В массиве хранятся начальные значения координат вершин восьмиугольника
-	POINT transVer[8] = { 0 }; //Массив используется для преобразованных координат
-	int R = 120; //Радиус восьмиугольника
 };
 
-Figure oct8; //Создание объекта oct8 (тип - Figure) 
-
-void CreatFigure()
+void Stolb::VisSt()
 {
-	oct8.pt0.x = 0;
-	oct8.pt0.y = 0;
-
-	for (int i = 0; i < KVer; i++)
-	{
-		//Расчет координат вершин восьмиугольника
-		//(координаты рассчитываются вокруг нуля).
-		//В экранной системе координат 0 - левый верхний угол
-		//клиентской области окна
-		oct8.topVer[i].x = (long)(oct8.R * cos(PI * i / 4.) + 0.5f);
-		oct8.topVer[i].y = (long)(oct8.R * sin(PI * i / 4.) + 0.5f);
-
-		oct8.transVer[i].x = oct8.topVer[i].x;
-		oct8.transVer[i].y = oct8.topVer[i].y;
-	}
-}
-//Функция сдвига восьмиугольника на величину
-//dx и dy по осям x и y соответственно
-void MoveFigure(int dx, int dy)
-{
-	oct8.pt0.x += dx;
-	oct8.pt0.y += dy;
-	for (int i = 0; i < KVer; i++)
-	{
-		oct8.transVer[i].x += dx;
-		oct8.transVer[i].y += dy;
-	}
+	Graphics::Set_brush(color, 1);
+	Graphics::Set_pen(color, 1);
 }
 
-//Поворот фигуры на alfa градусов
-void RotFigure(int alfa)
-{
-	long x, y;
-	float rad = alfa * PI / 180;//Перевод градусов в радианы
-
-//Используются формулы поворота фигуры вокруг
-//начала координат (вокруг 0).
-//Поэтому необходимо использовать значения
-//начальных координат, сформированных при создании
-//фигуры (функция CreatFigure())
-
-	oct8.pt0.x = 0;
-	oct8.pt0.y = 0;
-	for (int i = 0; i < KVer; i++)
-	{
-		x = oct8.topVer[i].x;
-		y = oct8.topVer[i].y;
-		oct8.transVer[i].x = (long)((x * cos(rad) - y * sin(rad)) + 0.5f);
-		oct8.transVer[i].y = (long)((x * sin(rad) + y * cos(rad)) + 0.5f);
-	}
-}
-//Визуализация восьмиугольника
-void VisFigure()
-{
-	//Рисуем восьмиугольник с помощью библиотечной
-	//функции Polygon(). В качестве параметров функция
-	//принимает контекст устройства (dc),
-	//массив типа POINT (oct8.transVer), размер
-	//массива (KVer).
-	//Если кисть использует цвета -1 -1 -1, то
-	//рисуется пустой многоугольник
-	Set_pen(dc, 255, 0, 0, 3);
-	Set_brush(dc, 255, 1, 1);
-	Polygon(dc, oct8.transVer, KVer);
-	//Рисование "спиц" восьмиугольника при
-	//помощи различных цветовых перьев шириной 3 пиксела
-	Set_pen(dc, 0, 255, 0, 3); //Зеленый цвет
-	Line(dc, oct8.transVer[0].x, oct8.transVer[0].y, oct8.transVer[4].x, oct8.transVer[4].y);
-	Set_pen(dc, 0, 0, 255, 3); //Синий цвет
-	Line(dc, oct8.transVer[1].x, oct8.transVer[1].y, oct8.transVer[5].x, oct8.transVer[5].y);
-	Set_pen(dc, 255, 255, 0, 3); //Желтый цвет
-	Line(dc, oct8.transVer[2].x, oct8.transVer[2].y, oct8.transVer[6].x, oct8.transVer[6].y);
-	Set_pen(dc, 255, 0, 255, 3); //Сиреневый цвет
-	Line(dc, oct8.transVer[3].x, oct8.transVer[3].y, oct8.transVer[7].x, oct8.transVer[7].y);
-}
-
-void AnimFigure()
-{
-	int key = 1, gr = 15, dx = 30;
-	//Код клавиши Esc - 27
-	//Код клавиши -> - 224
-	//Цикл работает, пока не нажата клавиша Esc
-	while (key != 27)
-	{
-		key = _getch();
-		if (key == 224)
-		{
-
-			RotFigure(gr);
-			MoveFigure(dx1, dy1);
-			MoveFigure(dx, 0);
-
-			VisFigure();
-			dx += 30;
-			gr += 30;
-		}
-	}
-}
-
+#endif GRAPHICS_H
