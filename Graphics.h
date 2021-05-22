@@ -1,5 +1,4 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#pragma once
 
 #include <windows.h>
 #include <stdio.h>
@@ -8,32 +7,30 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include <vector>
-#include <algorithm>
 using namespace std;
 //=============================================================================
 
-HWND hWnd;
+HWND hWnd; //Ссылка на окно
 
 class Graphics
 {
 private:
-	static HPEN hPen;
-	static HBRUSH hBrush;
-	static int wid, heg;
+	static HPEN hPen; //Дескриптор пера
+	static HBRUSH hBrush; //Дескриптор кисти
+	static int wid, heg; //Ширина и высота клиентской области окна
 public:
-	static HDC dc;
-	static void Set_pen(COLORREF, int);
-	static void Set_brush(COLORREF, bool);
-	static void Line(int, int, int, int);
-	static void Point(int, int, COLORREF);
-	static void Osi(int, int);
-	static int GetWid() { return wid; }
-	static int GetHeg() { return heg; }
+	static HDC dc; //Контекст устройства
+	static void Set_pen(COLORREF, int); //Получить перо (цвет, ширина(в пикселах))
+	static void Set_brush(COLORREF, bool); //Получить кисть (цвет, 0 - пустая 1 - цветная)
+	static void Line(int, int, int, int); //Нарисовать линию (x1,y1 - начальная точка, x2,y2 -  конечная точка)
+	static void Point(int, int, COLORREF); //Нарисовать пиксел (x,y - координаты точки (в пикселах), цвет)
+	static void Osi(); //Нарисовать оси
+	static int GetWid() { return wid; } //Получить ширину клиентской области окна в пикселах
+	static int GetHeg() { return heg; } //Получить высоту клиентской области окна в пикселах
 
-	static void InitGraphics(HWND);
-	~Graphics();
+	static void InitGraphics(HWND); //Инициализировать графический объект
+	~Graphics(); //Деструктор
 };
 HBRUSH Graphics::hBrush = NULL;
 HPEN Graphics::hPen = NULL;
@@ -66,8 +63,8 @@ void Graphics::Set_pen(COLORREF col, int w)
 }
 void Graphics::Set_brush(COLORREF col, bool empty)
 {
-	empty ? hBrush = ::CreateSolidBrush(col) :
-		hBrush = ::CreateSolidBrush(NULL_BRUSH);
+	empty ? hBrush = ::CreateSolidBrush(col) : 
+			hBrush = ::CreateSolidBrush(NULL_BRUSH);
 	::SelectObject(dc, hBrush);
 }
 void Graphics::Line(int x1, int y1, int x2, int y2)
@@ -79,7 +76,7 @@ void Graphics::Point(int x, int y, COLORREF col)
 {
 	SetPixel(dc, x, y, col);
 }
-void Graphics::Osi(int wid, int heg)
+void Graphics::Osi()
 {
 	Set_pen(RGB(80, 80, 80), 1);
 	Line(0, heg / 2, wid - 1, heg / 2);
@@ -87,24 +84,3 @@ void Graphics::Osi(int wid, int heg)
 }
 
 
-class Stolb
-{
-private:
-	int x0, y0;
-	int h, w;
-	int val;
-	COLORREF color = RGB(255, 255, 255);
-
-public:
-	Stolb();
-	void VisSt();
-
-};
-
-void Stolb::VisSt()
-{
-	Graphics::Set_brush(color, 1);
-	Graphics::Set_pen(color, 1);
-}
-
-#endif GRAPHICS_H
