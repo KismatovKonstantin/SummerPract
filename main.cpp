@@ -16,7 +16,7 @@ bool isSorted(vector<Stolb>stolbs)
 		stolbs[i].VisGreen();
 		stolbs[i + 1].VisGreen();
 		Sleep(60);
-		if(res)
+		if (res)
 			if (stolbs[i].val > stolbs[i + 1].val)
 			{
 				res = false;
@@ -73,7 +73,7 @@ void gnomeSort(vector<Stolb>stolbs)
 		else
 		{
 			move_swap(stolbs, i - 1, i);
-			stolbs[i].VisSt();
+			stolbs[i].VisSt(); //расчёска
 			stolbs[i - 1].VisSt();
 			i--;
 			if (i == 0)
@@ -105,9 +105,79 @@ void bogoSort(vector<Stolb>stolbs)
 			stolbs[i].VisSt();
 			stolbs[j].VisSt();
 			Sleep(10);
-		}	
+		}
 	}
 	for (int i = 0; i < n; i++)
+	{
+		Sleep(35);
+		stolbs[i].VisGreen();
+	}
+}
+
+void brushSort(vector<Stolb>stolbs)
+{
+	double factor = 1.2473309;
+	int step = stolbs.size() - 1;
+	while (step >= 1)
+	{
+		for (int i = 0; i + step < stolbs.size(); i++)
+		{
+			stolbs[i].VisRed();
+			stolbs[i+step].VisRed();
+			Sleep(20);
+			if (stolbs[i].val > stolbs[i + step].val)
+			{
+				move_swap(stolbs, i, i + step);
+			}
+			stolbs[i].VisSt();
+			stolbs[i + step].VisSt();
+			Sleep(11);
+		}
+		step /= factor;
+	}
+	for (int i = 0; i < stolbs.size(); i++)
+	{
+		Sleep(35);
+		stolbs[i].VisGreen();
+	}
+}
+
+void shakeSort(vector<Stolb>stolbs)
+{
+	int left = 0;
+	int right = stolbs.size() - 1;
+	while (left <= right) 
+	{
+		for (int i = right; i > left; --i) 
+		{
+			stolbs[i-1].VisRed();
+			stolbs[i].VisRed();
+			Sleep(20);
+			if (stolbs[i - 1].val > stolbs[i].val) 
+			{
+				move_swap(stolbs, i - 1, i);
+			}
+			stolbs[i - 1].VisSt();
+			stolbs[i].VisSt();
+			Sleep(5);
+		}
+		++left;
+		for (int i = left; i < right; ++i) 
+		{
+			stolbs[i].VisRed();
+			stolbs[i+1].VisRed();
+			Sleep(20);
+			if (stolbs[i].val > stolbs[i+1].val)
+			{
+				move_swap(stolbs, i, i+1);
+			}
+			stolbs[i].VisSt();
+			stolbs[i + 1].VisSt();
+			Sleep(5);
+		}
+		--right;
+	}
+	for (int i = 0; i < stolbs.size(); i++)
 	{
 		Sleep(35);
 		stolbs[i].VisGreen();
@@ -190,10 +260,10 @@ int main()
 	x = 0; y = (heg - 100) / n;
 	for (int i = 0; i < n; i++)
 	{
-		stolbs[i].set(x,heg, wid, n, (heg - 100) / n, v[i]);
+		stolbs[i].set(x, heg, wid, n, y, v[i]);
 		x += wid / n;
 	}
-//	cout << "Выберите сортировку\n";
+	//	cout << "Выберите сортировку\n";
 	system("cls");
 	Sleep(100);
 	cout << "Исходный массив:\n";
@@ -202,10 +272,10 @@ int main()
 		cout << v[i] << ' ';
 	}
 	cout << '\n';
-	draw(stolbs); 
+	draw(stolbs);
 	/* Сортировка пузырьком */
 	//bubbleSort(stolbs);
 	//bubleSort(stolbs);
 	//bogoSort(stolbs);
-	gnomeSort(stolbs);
+	brushSort(stolbs);
 }
