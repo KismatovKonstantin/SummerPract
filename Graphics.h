@@ -1,172 +1,86 @@
-#include "Graphics.h"
-#include <iostream>
-#include <vector>
+#pragma once
+
+#include <windows.h>
+#include <stdio.h>
+#include <time.h>
 #include <conio.h>
-#include <algorithm>
+#include <iostream>
 #include <fstream>
-class Stolb
+#include <string>
+#include <vector>
+using namespace std;
+//=============================================================================
+
+HWND hWnd; //Ссылка на окно
+
+class Graphics
 {
 private:
-	int x;
-	int h, w;
-	int n, a; // количество столбов и коэфициент перевода
-	HPEN Pen = CreatePen(PS_INSIDEFRAME, 3, RGB(0, 191, 255));
-	HPEN PenBlack = CreatePen(PS_INSIDEFRAME, 3, RGB(12, 12, 12));
-	HBRUSH BrushW	hite = CreateSolidBrush(RGB(255, 255, 255));
-	HBRUSH BrushGreen = CreateSolidBrush(RGB(0, 255, 127));
-	HBRUSH BrushRed = CreateSolidBrush(RGB(255, 105, 180));
-	HBRUSH BrushBlack = CreateSolidBrush(RGB(12, 12, 12));
-	HDC dc = GetDC(GetConsoleWindow());
+	static HPEN hPen; //Дескриптор пера
+	static HBRUSH hBrush; //Дескриптор кисти
+	static int wid, heg; //Ширина и высота клиентской области окна
 public:
-	int val;
-	int right;
-	
-	
-	void set(int, int, int, int, int, int);
-	void VisSt();
-	void VisBlack();
-	void VisRed();
-	void VisGreen();
+	static HDC dc; //Контекст устройства
+	static void Set_pen(COLORREF, int); //Получить перо (цвет, ширина(в пикселах))
+	static void Set_brush(COLORREF, bool); //Получить кисть (цвет, 0 - пустая 1 - цветная)
+	static void Line(int, int, int, int); //Нарисовать линию (x1,y1 - начальная точка, x2,y2 -  конечная точка)
+	static void Point(int, int, COLORREF); //Нарисовать пиксел (x,y - координаты точки (в пикселах), цвет)
+	static void Osi(); //Нарисовать оси
+	static int GetWid() { return wid; } //Получить ширину клиентской области окна в пикселах
+	static int GetHeg() { return heg; } //Получить высоту клиентской области окна в пикселах
+
+	static void InitGraphics(HWND); //Инициализировать графический объект
+	~Graphics(); //Деструктор
 };
+HBRUSH Graphics::hBrush = NULL;
+HPEN Graphics::hPen = NULL;
+HDC Graphics::dc = NULL;
+int Graphics::wid = 0;
+int Graphics::heg = 0;
 
-void Stolb::VisSt() // Голубая обводка с белым фоном
+void Graphics::InitGraphics(HWND hWnd)
 {
-	
-	/*Graphics t;
-	t.InitGraphics(GetConsoleWindow());
-	t.Set_pen(RGB(0, 191, 255), 3);
-	t.Set_brush(RGB(255, 255, 255), 1);
-	Rectangle(t.dc, x, h - 0, x + w / n, right);
-	t.~Graphics();*/
-	SelectObject(dc, Pen);
-	SelectObject(dc, BrushWhite);
-	Rectangle(dc, x, h - 0, x + w / n, right);
+	dc = GetDC(hWnd);
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	wid = rect.right;
+	heg = rect.bottom;
+	Set_pen(RGB(255, 255, 255), 1);
+	Set_brush(RGB(255, 255, 255), true);
 }
 
-void Stolb::VisGreen() // Голубая обводка с зеленым фоном
+Graphics::~Graphics()
 {
-	/*Graphics::Set_pen(RGB(0, 191, 255), 3);
-	Graphics::Set_brush(RGB(0, 255, 127), 1);
-	Rectangle(Graphics::dc, x, h - 0, x + w / n, right);*/
-	Graphics t;
-	/*t.InitGraphics(GetConsoleWindow());
-	t.Set_pen(RGB(0, 191, 255), 3);
-	t.Set_brush(RGB(0, 255, 127), 1);
-	Rectangle(t.dc, x, h - 0, x + w / n, right);
-	t.~Graphics();*/
-	SelectObject(dc, Pen);
-	SelectObject(dc, BrushGreen);
-	Rectangle(dc, x, h - 0, x + w / n, right);
+	DeleteObject(hPen);
+	DeleteObject(hBrush);
+	ReleaseDC(hWnd, dc);
+	DeleteDC(dc);
+}
+void Graphics::Set_pen(COLORREF col, int w)
+{
+	hPen = CreatePen(PS_INSIDEFRAME, w, col);
+	SelectObject(dc, hPen);
+}
+void Graphics::Set_brush(COLORREF col, bool empty)
+{
+	empty ? hBrush = ::CreateSolidBrush(col) : 
+			hBrush = ::CreateSolidBrush(NULL_BRUSH);
+	::SelectObject(dc, hBrush);
+}
+void Graphics::Line(int x1, int y1, int x2, int y2)
+{
+	MoveToEx(dc, x1, y1, NULL);
+	LineTo(dc, x2, y2);
+}
+void Graphics::Point(int x, int y, COLORREF col)
+{
+	SetPixel(dc, x, y, col);
+}
+void Graphics::Osi()
+{
+	Set_pen(RGB(80, 80, 80), 1);
+	Line(0, heg / 2, wid - 1, heg / 2);
+	Line(wid / 2, 0, wid / 2, heg - 1);
 }
 
-void Stolb::VisRed() // Голубая обводка с малиновым фоном
-{
-	/*Graphics::Set_pen(RGB(0, 191, 255), 3);
-	Graphics::Set_brush(RGB(255, 105, 180), 1);
-	Rectangle(Graphics::dc, x, h - 0, x + w / n, right);*/
-	/*Graphics t;
-	t.InitGraphics(GetConsoleWindow());
-	t.Set_pen(RGB(0, 191, 255), 3);
-	t.Set_brush(RGB(255, 105, 180), 1);
-	Rectangle(t.dc, x, h - 0, x + w / n, right);
-	t.~Graphics();*/
-	SelectObject(dc, Pen);
-	SelectObject(dc, BrushRed);
-	Rectangle(dc, x, h - 0, x + w / n, right);
-}
-
-void Stolb::VisBlack() // Закрасить черным квадратом
-{
-	/*Graphics::Set_pen(RGB(12, 12, 12), 3);
-	Graphics::Set_brush(RGB(12, 12, 12), 1);
-	Rectangle(Graphics::dc, x, h - 0, x + w / n, right);*/
-	Graphics t;
-	/*t.InitGraphics(GetConsoleWindow());
-	t.Set_pen(RGB(12, 12, 12), 3);
-	t.Set_brush(RGB(12, 12, 12), 1);
-	Rectangle(t.dc, x, h - 0, x + w / n, right);
-	t.~Graphics();*/
-	SelectObject(dc, PenBlack);
-	SelectObject(dc, BrushBlack);
-	Rectangle(dc, x, h - 0, x + w / n, right);
-}
-
-void Stolb::set(int _x,int _h,int _w,int _n,int _a,int _val)
-{
-	x = _x;
-	h = _h;
-	w = _w;
-	val = _val;
-	n = _n;
-	a = _a;
-	val = _val;
-	right = h - a * val;
-} // инициализатор
-
-int Stolb::getRight()
-{
-	return right;
-}
-
-
-void draw(vector<Stolb>v) //Нарисовать все столбы стандартным цветом.
-{
-	for (int i = 0; i < v.size(); i++)
-		v[i].VisSt();
-}
-
-void drawFin(vector<Stolb>v) //Нарисовать все столбы стандартным цветом.
-{
-	for (int i = 0; i < v.size(); i++)
-		v[i].VisGreen();
-}
-
-void move_swap(vector<Stolb>&v, int i, int j) // Функция анимации swap'a двух элементов
-{
-	if (i == j)
-		return;
-	Sleep(5);
-	int speed = v.size() * 2;
-	if (v.size() * 2 < 25)
-		speed = 25;
-	int start = v[i].right;
-	int end = v[j].right;
-	int k,k1 = 0;
-	k = start > end ? -1 : 1;
-	ofstream fout("debug.txt",ios::app);
-	fout << start << ' ' << end << '\n'; // start > end;
-	while (1)
-	{   
-		k1++;
-		Sleep(25); // Задержка для обработки
-		v[i].VisBlack();
-		v[j].VisBlack();
-		
-		v[i].right +=  k * speed; // 2n - скорость по умолчанию
-		v[j].right += -k * speed; // 2n - скорость по умолчанию
-		if (v[i].right > end && start < end || v[i].right < end && start > end)
-		{
-			v[i].right = end;
-			v[j].right = start;
-			v[i].VisRed();
-			v[j].VisRed();
-			break;
-		}
-		if (v[j].right < start && start < end || v[j].right > start && start > end)
-		{
-			v[i].right = end;
-			v[j].right = start;
-			v[i].VisRed();
-			v[j].VisRed();
-			break;
-		}
-		v[i].VisRed();
-		v[j].VisRed();
-	}
-	v[i].right = end;
-	v[j].right = start;
-	swap(v[i].val, v[j].val);
-	fout << v[i].right << ' ' << v[j].right << '\n'; // start > end;
-	return;
-}
 
