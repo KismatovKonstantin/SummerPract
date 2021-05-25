@@ -12,7 +12,7 @@ private:
 	int n, a; // количество столбов и коэфициент перевода
 	HPEN Pen = CreatePen(PS_INSIDEFRAME, 3, RGB(0, 191, 255));
 	HPEN PenBlack = CreatePen(PS_INSIDEFRAME, 3, RGB(12, 12, 12));
-	HBRUSH BrushWhite = CreateSolidBrush(RGB(255, 255, 255));
+	HBRUSH BrushW	hite = CreateSolidBrush(RGB(255, 255, 255));
 	HBRUSH BrushGreen = CreateSolidBrush(RGB(0, 255, 127));
 	HBRUSH BrushRed = CreateSolidBrush(RGB(255, 105, 180));
 	HBRUSH BrushBlack = CreateSolidBrush(RGB(12, 12, 12));
