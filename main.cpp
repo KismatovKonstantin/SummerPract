@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <fstream>
 using namespace std;
-
 bool isSorted(vector<Stolb>stolbs)
 {
 	bool res = true;
@@ -123,7 +122,7 @@ void brushSort(vector<Stolb>stolbs)
 		for (int i = 0; i + step < stolbs.size(); i++)
 		{
 			stolbs[i].VisRed();
-			stolbs[i+step].VisRed();
+			stolbs[i + step].VisRed();
 			Sleep(20);
 			if (stolbs[i].val > stolbs[i + step].val)
 			{
@@ -146,14 +145,14 @@ void shakeSort(vector<Stolb>stolbs)
 {
 	int left = 0;
 	int right = stolbs.size() - 1;
-	while (left <= right) 
+	while (left <= right)
 	{
-		for (int i = right; i > left; --i) 
+		for (int i = right; i > left; i--)
 		{
-			stolbs[i-1].VisRed();
+			stolbs[i - 1].VisRed();
 			stolbs[i].VisRed();
 			Sleep(20);
-			if (stolbs[i - 1].val > stolbs[i].val) 
+			if (stolbs[i - 1].val > stolbs[i].val)
 			{
 				move_swap(stolbs, i - 1, i);
 			}
@@ -161,21 +160,56 @@ void shakeSort(vector<Stolb>stolbs)
 			stolbs[i].VisSt();
 			Sleep(5);
 		}
-		++left;
-		for (int i = left; i < right; ++i) 
+		left++;
+		for (int i = left; i < right; i++)
 		{
 			stolbs[i].VisRed();
-			stolbs[i+1].VisRed();
+			stolbs[i + 1].VisRed();
 			Sleep(20);
-			if (stolbs[i].val > stolbs[i+1].val)
+			if (stolbs[i].val > stolbs[i + 1].val)
 			{
-				move_swap(stolbs, i, i+1);
+				move_swap(stolbs, i, i + 1);
 			}
 			stolbs[i].VisSt();
 			stolbs[i + 1].VisSt();
 			Sleep(5);
 		}
-		--right;
+		right--;
+	}
+	for (int i = 0; i < stolbs.size(); i++)
+	{
+		Sleep(35);
+		stolbs[i].VisGreen();
+	}
+}
+
+void selectionSort(vector<Stolb>stolbs)
+{
+	for (int i = 0; i < stolbs.size() - 1; i++)
+	{
+		int mn = i;
+		stolbs[mn].VisRed();
+		for (int j = i + 1; j < stolbs.size(); j++)
+		{
+			int t = mn;
+			stolbs[j].VisRed();
+			
+			Sleep(20);
+			if (stolbs[j].val < stolbs[mn].val)
+			{
+				mn = j;
+			}
+			stolbs[j].VisSt();
+			
+			Sleep(5);
+		}
+		stolbs[mn].VisSt();
+		if (mn != i)
+		{
+			move_swap(stolbs, i, mn);
+			stolbs[i].VisSt();
+			stolbs[mn].VisSt();
+		}
 	}
 	for (int i = 0; i < stolbs.size(); i++)
 	{
@@ -201,60 +235,47 @@ int main()
 	cin >> n;
 	if (n > 100 || n < 1)
 	{
-		cout << "Ошибка во входных данных, введите n в промежутке [1;200]\n";
+		cout << "Ошибка во входных данных, введите n в промежутке [1;100]\n";
 		exit(0);
 	}
 	vector<int>v(n);
-	cout << "Выберите опцию:\n";
-	cout << "1 - ввод массива с клавиатуры\n";
-	cout << "2 - генерация случайного массива\n";
-	char optionResult = _getch();
-	if (optionResult == '1')
+	bool doAgain = false;
+	do
 	{
-		cout << "Введите n элементов:\n";
 		for (int i = 0; i < n; i++)
-			cin >> v[i];
-	}
-	else
-	{
-		bool doAgain = false;
-		do
 		{
-			for (int i = 0; i < n; i++)
-			{
-				v[i] = i + 1;
-			}
-			for (int i = n - 1; i >= 1; i--)
-			{
-				int j = rand() % (i + 1);  // j принадлежит [0;i]
-				swap(v[i], v[j]);
-			}
-			cout << "Полученный массив:\n";
-			for (int i = 0; i < n; i++)
-			{
-				cout << v[i] << ' ';
-			}
-			cout << '\n';
-			cout << "Перегенерировать массив?\n";
-			cout << "1 - Оставить и приступить к выбору сортировки\n";
-			cout << "2 - Сгенерировать новый массив\n";
-			cout << "0 - Выход из программы\n";
-			char ch = _getch();
-			switch (ch)
-			{
-			case '1':
-				doAgain = false;
-				break;
-			case '2':
-				system("cls");
-				doAgain = true;
-				break;
-			default:
-				exit(0);
-				break;
-			}
-		} while (doAgain);
-	}
+			v[i] = i + 1;
+		}
+		for (int i = n - 1; i >= 1; i--)
+		{
+			int j = rand() % (i + 1);  // j принадлежит [0;i]
+			swap(v[i], v[j]);
+		}
+		cout << "Полученный массив:\n";
+		for (int i = 0; i < n; i++)
+		{
+			cout << v[i] << ' ';
+		}
+		cout << '\n';
+		cout << "Перегенерировать массив?\n";
+		cout << "1 - Оставить и приступить к выбору сортировки\n";
+		cout << "2 - Сгенерировать новый массив\n";
+		cout << "0 - Выход из программы\n";
+		char ch = _getch();
+		switch (ch)
+		{
+		case '1':
+			doAgain = false;
+			break;
+		case '2':
+			system("cls");
+			doAgain = true;
+			break;
+		default:
+			exit(0);
+			break;
+		}
+	} while (doAgain);
 	vector<Stolb>stolbs(n);
 	int x, y;
 	x = 0; y = (heg - 100) / n;
@@ -277,5 +298,6 @@ int main()
 	//bubbleSort(stolbs);
 	//bubleSort(stolbs);
 	//bogoSort(stolbs);
-	brushSort(stolbs);
+	//brushSort(stolbs);
+	selectionSort(stolbs);
 }
