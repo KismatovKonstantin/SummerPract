@@ -103,10 +103,6 @@ void Stolb::set(int _x,int _h,int _w,int _n,int _a,int _val)
 	right = h - a * val;
 } // инициализатор
 
-int Stolb::getRight()
-{
-	return right;
-}
 
 
 void draw(vector<Stolb>v) //Нарисовать все столбы стандартным цветом.
