@@ -9,7 +9,7 @@ class Stolb
 private:
 	int x;
 	int h, w;
-	int n, a; // РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚РѕР»Р±РѕРІ Рё РєРѕСЌС„РёС†РёРµРЅС‚ РїРµСЂРµРІРѕРґР°
+	int n, a; // количество столбов и коэфициент перевода
 	HPEN Pen = CreatePen(PS_INSIDEFRAME, 3, RGB(0, 191, 255));
 	HPEN PenBlack = CreatePen(PS_INSIDEFRAME, 3, RGB(12, 12, 12));
 	HBRUSH BrushWhite = CreateSolidBrush(RGB(255, 255, 255));
@@ -20,18 +20,19 @@ private:
 public:
 	int val;
 	int right;
-	
-	
+
+
 	void set(int, int, int, int, int, int);
 	void VisSt();
 	void VisBlack();
 	void VisRed();
 	void VisGreen();
+	void make_equal(Stolb);
 };
 
-void Stolb::VisSt() // Р“РѕР»СѓР±Р°СЏ РѕР±РІРѕРґРєР° СЃ Р±РµР»С‹Рј С„РѕРЅРѕРј
+void Stolb::VisSt() // Голубая обводка с белым фоном
 {
-	
+
 	/*Graphics t;
 	t.InitGraphics(GetConsoleWindow());
 	t.Set_pen(RGB(0, 191, 255), 3);
@@ -43,7 +44,7 @@ void Stolb::VisSt() // Р“РѕР»СѓР±Р°СЏ РѕР±РІРѕРґРєР° СЃ Р±РµР»С‹Рј С„РѕРЅРѕРј
 	Rectangle(dc, x, h - 0, x + w / n, right);
 }
 
-void Stolb::VisGreen() // Р“РѕР»СѓР±Р°СЏ РѕР±РІРѕРґРєР° СЃ Р·РµР»РµРЅС‹Рј С„РѕРЅРѕРј
+void Stolb::VisGreen() // Голубая обводка с зеленым фоном
 {
 	/*Graphics::Set_pen(RGB(0, 191, 255), 3);
 	Graphics::Set_brush(RGB(0, 255, 127), 1);
@@ -59,7 +60,7 @@ void Stolb::VisGreen() // Р“РѕР»СѓР±Р°СЏ РѕР±РІРѕРґРєР° СЃ Р·РµР»РµРЅС‹Рј С„РѕРЅ
 	Rectangle(dc, x, h - 0, x + w / n, right);
 }
 
-void Stolb::VisRed() // Р“РѕР»СѓР±Р°СЏ РѕР±РІРѕРґРєР° СЃ РјР°Р»РёРЅРѕРІС‹Рј С„РѕРЅРѕРј
+void Stolb::VisRed() // Голубая обводка с малиновым фоном
 {
 	/*Graphics::Set_pen(RGB(0, 191, 255), 3);
 	Graphics::Set_brush(RGB(255, 105, 180), 1);
@@ -75,7 +76,7 @@ void Stolb::VisRed() // Р“РѕР»СѓР±Р°СЏ РѕР±РІРѕРґРєР° СЃ РјР°Р»РёРЅРѕРІС‹Рј С„Рѕ
 	Rectangle(dc, x, h - 0, x + w / n, right);
 }
 
-void Stolb::VisBlack() // Р—Р°РєСЂР°СЃРёС‚СЊ С‡РµСЂРЅС‹Рј РєРІР°РґСЂР°С‚РѕРј
+void Stolb::VisBlack() // Закрасить черным квадратом
 {
 	/*Graphics::Set_pen(RGB(12, 12, 12), 3);
 	Graphics::Set_brush(RGB(12, 12, 12), 1);
@@ -91,7 +92,7 @@ void Stolb::VisBlack() // Р—Р°РєСЂР°СЃРёС‚СЊ С‡РµСЂРЅС‹Рј РєРІР°РґСЂР°С‚РѕРј
 	Rectangle(dc, x, h - 0, x + w / n, right);
 }
 
-void Stolb::set(int _x,int _h,int _w,int _n,int _a,int _val)
+void Stolb::set(int _x, int _h, int _w, int _n, int _a, int _val)
 {
 	x = _x;
 	h = _h;
@@ -101,23 +102,16 @@ void Stolb::set(int _x,int _h,int _w,int _n,int _a,int _val)
 	a = _a;
 	val = _val;
 	right = h - a * val;
-} // РёРЅРёС†РёР°Р»РёР·Р°С‚РѕСЂ
+} // инициализатор
 
 
-
-void draw(vector<Stolb>v) //РќР°СЂРёСЃРѕРІР°С‚СЊ РІСЃРµ СЃС‚РѕР»Р±С‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рј С†РІРµС‚РѕРј.
+void draw(vector<Stolb>v) //Нарисовать все столбы стандартным цветом.
 {
 	for (int i = 0; i < v.size(); i++)
 		v[i].VisSt();
 }
 
-void drawFin(vector<Stolb>v) //РќР°СЂРёСЃРѕРІР°С‚СЊ РІСЃРµ СЃС‚РѕР»Р±С‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рј С†РІРµС‚РѕРј.
-{
-	for (int i = 0; i < v.size(); i++)
-		v[i].VisGreen();
-}
-
-void move_swap(vector<Stolb>&v, int i, int j) // Р¤СѓРЅРєС†РёСЏ Р°РЅРёРјР°С†РёРё swap'a РґРІСѓС… СЌР»РµРјРµРЅС‚РѕРІ
+void move_swap(vector<Stolb>& v, int i, int j) // Функция анимации swap'a двух элементов
 {
 	if (i == j)
 		return;
@@ -127,19 +121,19 @@ void move_swap(vector<Stolb>&v, int i, int j) // Р¤СѓРЅРєС†РёСЏ Р°РЅРёРјР°С†РёРё
 		speed = 25;
 	int start = v[i].right;
 	int end = v[j].right;
-	int k,k1 = 0;
+	int k, k1 = 0;
 	k = start > end ? -1 : 1;
-	ofstream fout("debug.txt",ios::app);
+	ofstream fout("debug.txt", ios::app);
 	fout << start << ' ' << end << '\n'; // start > end;
 	while (1)
-	{   
+	{
 		k1++;
-		Sleep(25); // Р—Р°РґРµСЂР¶РєР° РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё
+		Sleep(25); // Задержка для обработки
 		v[i].VisBlack();
 		v[j].VisBlack();
-		
-		v[i].right +=  k * speed; // 2n - СЃРєРѕСЂРѕСЃС‚СЊ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
-		v[j].right += -k * speed; // 2n - СЃРєРѕСЂРѕСЃС‚СЊ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+
+		v[i].right += k * speed; // 2n - скорость по умолчанию
+		v[j].right += -k * speed; // 2n - скорость по умолчанию
 		if (v[i].right > end && start < end || v[i].right < end && start > end)
 		{
 			v[i].right = end;
@@ -166,3 +160,26 @@ void move_swap(vector<Stolb>&v, int i, int j) // Р¤СѓРЅРєС†РёСЏ Р°РЅРёРјР°С†РёРё
 	return;
 }
 
+void Stolb::make_equal(Stolb II)
+{
+	VisBlack();
+	Sleep(10);
+	int step = n * 2;
+	int k = right > II.right ? -1 : 1;
+	if (right == II.right)
+	{
+		VisSt();
+		return;
+	}
+	if (abs(right - II.right) < step)
+	{
+		right = II.right;
+		Sleep(30);
+		VisSt();
+		Sleep(30);
+		return;
+	}
+	right += k * step;
+	VisRed();
+	Sleep(30);
+}

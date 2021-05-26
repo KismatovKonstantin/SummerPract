@@ -72,7 +72,7 @@ void gnomeSort(vector<Stolb>stolbs)
 		else
 		{
 			move_swap(stolbs, i - 1, i);
-			stolbs[i].VisSt(); //СЂР°СЃС‡С‘СЃРєР°
+			stolbs[i].VisSt(); //расчёска
 			stolbs[i - 1].VisSt();
 			i--;
 			if (i == 0)
@@ -96,7 +96,7 @@ void bogoSort(vector<Stolb>stolbs)
 	{
 		for (int i = n - 1; i >= 1; i--)
 		{
-			int j = rand() % (i + 1);  // j РїСЂРёРЅР°РґР»РµР¶РёС‚ [0;i];
+			int j = rand() % (i + 1);  // j принадлежит [0;i];
 			stolbs[i].VisRed();
 			stolbs[j].VisRed();
 			Sleep(20);
@@ -193,14 +193,14 @@ void selectionSort(vector<Stolb>stolbs)
 		{
 			int t = mn;
 			stolbs[j].VisRed();
-			
+
 			Sleep(20);
 			if (stolbs[j].val < stolbs[mn].val)
 			{
 				mn = j;
 			}
 			stolbs[j].VisSt();
-			
+
 			Sleep(5);
 		}
 		stolbs[mn].VisSt();
@@ -218,25 +218,139 @@ void selectionSort(vector<Stolb>stolbs)
 	}
 }
 
+void mergeRec(vector<Stolb>& stolbs, int start, int end)
+{
+	ofstream fout("test.txt", ios::app);
+	int n = end - start + 1;
+	if (n == 1)
+		return;
+	if (n == 2)
+	{
+		stolbs[start].VisRed();
+		stolbs[end].VisRed();
+		Sleep(20);
+		if (stolbs[start].val > stolbs[end].val)
+			move_swap(stolbs, start, end);
+		stolbs[start].VisSt();
+		stolbs[end].VisSt();
+		Sleep(5);
+		fout << stolbs[start].val << ' ' << stolbs[end].val << endl;
+		return;
+	}
+	if (n == 3)
+	{
+		stolbs[start].VisRed();
+		stolbs[start + 1].VisRed();
+		Sleep(20);
+		if (stolbs[start].val > stolbs[start + 1].val)
+			move_swap(stolbs, start, start + 1);
+		stolbs[start].VisSt();
+		stolbs[start + 1].VisSt();
+		Sleep(5);
+
+		stolbs[start + 1].VisRed();
+		stolbs[end].VisRed();
+		Sleep(20);
+		if (stolbs[start + 1].val > stolbs[end].val)
+			move_swap(stolbs, start + 1, end);
+		stolbs[start + 1].VisSt();
+		stolbs[end].VisSt();
+		Sleep(5);
+
+		stolbs[start].VisRed();
+		stolbs[start + 1].VisRed();
+		Sleep(20);
+		if (stolbs[start].val > stolbs[start + 1].val)
+			move_swap(stolbs, start, start + 1);
+		stolbs[start].VisSt();
+		stolbs[start + 1].VisSt();
+		Sleep(5);
+
+		fout << stolbs[start].val << ' ' << stolbs[start + 1].val << ' ' << stolbs[end].val << endl;
+		return;
+	}
+	mergeRec(stolbs, start, (start + end) / 2);
+	mergeRec(stolbs, (start + end) / 2 + 1, end);
+	vector<Stolb> sorted;
+	int i = start, j = (start + end) / 2 + 1;
+	while (i <= (start + end) / 2 && j <= end)
+	{
+		if (stolbs[i].val < stolbs[j].val)
+		{
+			sorted.push_back(stolbs[i]);
+			i++;
+		}
+		else
+		{
+			if (stolbs[i].val > stolbs[j].val)
+			{
+				sorted.push_back(stolbs[j]);
+				j++;
+			}
+		}
+	}
+	while (i <= (start + end) / 2)
+	{
+		sorted.push_back(stolbs[i]);
+		i++;
+	}
+	while (j <= end)
+	{
+		sorted.push_back(stolbs[j]);
+		j++;
+	}
+
+	for (i = 0; i < n; i++)
+	{
+		while (stolbs[i + start].right != sorted[i].right)
+			stolbs[i + start].make_equal(sorted[i]);
+		stolbs[i + start].VisSt();
+	}
+
+
+	for (int i = 0; i < sorted.size(); i++)
+	{
+		stolbs[i + start].val = sorted[i].val;
+		stolbs[i + start].right = sorted[i].right;
+		Sleep(10);
+		stolbs[i + start].VisSt();
+		Sleep(10);
+	}
+
+	for (i = start; i <= end; i++)
+		fout << stolbs[i].val << ' ';
+	fout << endl;
+}
+
+void mergeSort(vector<Stolb>stolbs)
+{
+	mergeRec(stolbs, 0, stolbs.size() - 1);
+	for (int i = 0; i < stolbs.size(); i++)
+	{
+		stolbs[i].VisGreen();
+		Sleep(35);
+	}
+}
+
 int main()
 {
 	srand((unsigned)time(0));
 	//SetConsoleTitle((LPCWSTR)"Program");
-	system("mode con cols=200 lines=50"); //РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°Р·РјРµСЂ РѕРєРЅР° РІ Р·РЅР°РєРѕРјРµСЃС‚Р°С…
+	system("mode con cols=150 lines=35"); //Установить размер окна в знакоместах
 	HANDLE HandleCons = ::GetStdHandle(STD_OUTPUT_HANDLE);
-	HWND hWnd = GetConsoleWindow(); //РџРѕР»СѓС‡РёС‚СЊ СЃСЃС‹Р»РєСѓ РЅР° РѕРєРЅРѕ
+	HWND hWnd = GetConsoleWindow(); //Получить ссылку на окно
 	Graphics::InitGraphics(hWnd);
 	Sleep(50);
-	int wid = Graphics::GetWid();
-	int heg = Graphics::GetHeg();
+	int wid = 1600; //Graphics::GetWid();
+	int heg = 835; //Graphics::GetHeg();
 	setlocale(LC_ALL, "RUS");
-	cout << "Р’РІРµРґРёС‚Рµ СЂР°Р·РјРµСЂ РёСЃС…РѕРґРЅРѕРіРѕ РјР°СЃСЃРёРІР°: ";
+	cout << "Введите размер исходного массива (от 5 до 100): ";
 	int n;
 	cin >> n;
-	if (n > 100 || n < 1)
+	while(n > 100 || n < 5)
 	{
-		cout << "РћС€РёР±РєР° РІРѕ РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…, РІРІРµРґРёС‚Рµ n РІ РїСЂРѕРјРµР¶СѓС‚РєРµ [1;100]\n";
-		exit(0);
+		cout << "Ошибка во входных данных, введите n в промежутке [5;100]\n";
+		cin >> n;
 	}
 	vector<int>v(n);
 	bool doAgain = false;
@@ -248,19 +362,19 @@ int main()
 		}
 		for (int i = n - 1; i >= 1; i--)
 		{
-			int j = rand() % (i + 1);  // j РїСЂРёРЅР°РґР»РµР¶РёС‚ [0;i]
+			int j = rand() % (i + 1);  // j принадлежит [0;i]
 			swap(v[i], v[j]);
 		}
-		cout << "РџРѕР»СѓС‡РµРЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n";
+		cout << "Полученный массив:\n";
 		for (int i = 0; i < n; i++)
 		{
 			cout << v[i] << ' ';
 		}
 		cout << '\n';
-		cout << "РџРµСЂРµРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РјР°СЃСЃРёРІ?\n";
-		cout << "1 - РћСЃС‚Р°РІРёС‚СЊ Рё РїСЂРёСЃС‚СѓРїРёС‚СЊ Рє РІС‹Р±РѕСЂСѓ СЃРѕСЂС‚РёСЂРѕРІРєРё\n";
-		cout << "2 - РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РЅРѕРІС‹Р№ РјР°СЃСЃРёРІ\n";
-		cout << "0 - Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹\n";
+		cout << "Перегенерировать массив?\n";
+		cout << "1 - Оставить и приступить к выбору сортировки\n";
+		cout << "2 - Сгенерировать новый массив\n";
+		cout << "0 - Выход из программы\n";
 		char ch = _getch();
 		switch (ch)
 		{
@@ -284,20 +398,24 @@ int main()
 		stolbs[i].set(x, heg, wid, n, y, v[i]);
 		x += wid / n;
 	}
-	//	cout << "Р’С‹Р±РµСЂРёС‚Рµ СЃРѕСЂС‚РёСЂРѕРІРєСѓ\n";
+	//	cout << "Выберите сортировку\n";
 	system("cls");
 	Sleep(100);
-	cout << "РСЃС…РѕРґРЅС‹Р№ РјР°СЃСЃРёРІ:\n";
+	cout << "Исходный массив:\n";
 	for (int i = 0; i < n; i++)
 	{
 		cout << v[i] << ' ';
 	}
 	cout << '\n';
 	draw(stolbs);
-	/* РЎРѕСЂС‚РёСЂРѕРІРєР° РїСѓР·С‹СЂСЊРєРѕРј */
+	/* Сортировка пузырьком */
 	//bubbleSort(stolbs);
 	//bubleSort(stolbs);
 	//bogoSort(stolbs);
-	//brushSort(stolbs);
-	selectionSort(stolbs);
+	brushSort(stolbs);
+	//selectionSort(stolbs);
+	//mergeSort(stolbs);
+	//while (stolbs[0].right != stolbs[1].right)
+	//	make_equal(stolbs[0], stolbs[1]);
+	_getch();
 }

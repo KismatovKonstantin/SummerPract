@@ -11,26 +11,26 @@
 using namespace std;
 //=============================================================================
 
-HWND hWnd; //РЎСЃС‹Р»РєР° РЅР° РѕРєРЅРѕ
+HWND hWnd; //Ссылка на окно
 
 class Graphics
 {
 private:
-	static HPEN hPen; //Р”РµСЃРєСЂРёРїС‚РѕСЂ РїРµСЂР°
-	static HBRUSH hBrush; //Р”РµСЃРєСЂРёРїС‚РѕСЂ РєРёСЃС‚Рё
-	static int wid, heg; //РЁРёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° РєР»РёРµРЅС‚СЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё РѕРєРЅР°
+	static HPEN hPen; //Дескриптор пера
+	static HBRUSH hBrush; //Дескриптор кисти
+	static int wid, heg; //Ширина и высота клиентской области окна
 public:
-	static HDC dc; //РљРѕРЅС‚РµРєСЃС‚ СѓСЃС‚СЂРѕР№СЃС‚РІР°
-	static void Set_pen(COLORREF, int); //РџРѕР»СѓС‡РёС‚СЊ РїРµСЂРѕ (С†РІРµС‚, С€РёСЂРёРЅР°(РІ РїРёРєСЃРµР»Р°С…))
-	static void Set_brush(COLORREF, bool); //РџРѕР»СѓС‡РёС‚СЊ РєРёСЃС‚СЊ (С†РІРµС‚, 0 - РїСѓСЃС‚Р°СЏ 1 - С†РІРµС‚РЅР°СЏ)
-	static void Line(int, int, int, int); //РќР°СЂРёСЃРѕРІР°С‚СЊ Р»РёРЅРёСЋ (x1,y1 - РЅР°С‡Р°Р»СЊРЅР°СЏ С‚РѕС‡РєР°, x2,y2 -  РєРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєР°)
-	static void Point(int, int, COLORREF); //РќР°СЂРёСЃРѕРІР°С‚СЊ РїРёРєСЃРµР» (x,y - РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РєРё (РІ РїРёРєСЃРµР»Р°С…), С†РІРµС‚)
-	static void Osi(); //РќР°СЂРёСЃРѕРІР°С‚СЊ РѕСЃРё
-	static int GetWid() { return wid; } //РџРѕР»СѓС‡РёС‚СЊ С€РёСЂРёРЅСѓ РєР»РёРµРЅС‚СЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
-	static int GetHeg() { return heg; } //РџРѕР»СѓС‡РёС‚СЊ РІС‹СЃРѕС‚Сѓ РєР»РёРµРЅС‚СЃРєРѕР№ РѕР±Р»Р°СЃС‚Рё РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
+	static HDC dc; //Контекст устройства
+	static void Set_pen(COLORREF, int); //Получить перо (цвет, ширина(в пикселах))
+	static void Set_brush(COLORREF, bool); //Получить кисть (цвет, 0 - пустая 1 - цветная)
+	static void Line(int, int, int, int); //Нарисовать линию (x1,y1 - начальная точка, x2,y2 -  конечная точка)
+	static void Point(int, int, COLORREF); //Нарисовать пиксел (x,y - координаты точки (в пикселах), цвет)
+	static void Osi(); //Нарисовать оси
+	static int GetWid() { return wid; } //Получить ширину клиентской области окна в пикселах
+	static int GetHeg() { return heg; } //Получить высоту клиентской области окна в пикселах
 
-	static void InitGraphics(HWND); //РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚
-	~Graphics(); //Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
+	static void InitGraphics(HWND); //Инициализировать графический объект
+	~Graphics(); //Деструктор
 };
 HBRUSH Graphics::hBrush = NULL;
 HPEN Graphics::hPen = NULL;
@@ -63,8 +63,8 @@ void Graphics::Set_pen(COLORREF col, int w)
 }
 void Graphics::Set_brush(COLORREF col, bool empty)
 {
-	empty ? hBrush = ::CreateSolidBrush(col) : 
-			hBrush = ::CreateSolidBrush(NULL_BRUSH);
+	empty ? hBrush = ::CreateSolidBrush(col) :
+		hBrush = ::CreateSolidBrush(NULL_BRUSH);
 	::SelectObject(dc, hBrush);
 }
 void Graphics::Line(int x1, int y1, int x2, int y2)
@@ -82,5 +82,3 @@ void Graphics::Osi()
 	Line(0, heg / 2, wid - 1, heg / 2);
 	Line(wid / 2, 0, wid / 2, heg - 1);
 }
-
-
