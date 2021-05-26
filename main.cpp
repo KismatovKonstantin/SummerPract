@@ -28,6 +28,7 @@ bool isSorted(vector<Stolb>stolbs)
 
 void bubleSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: пузырьковой сортировкой";
 	int n = stolbs.size();
 	for (int i = 0; i < n; i++)
 	{
@@ -55,6 +56,7 @@ void bubleSort(vector<Stolb>stolbs)
 
 void gnomeSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: гномьей сортировкой";
 	int n = stolbs.size();
 	int j = 2;
 	for (int i = 1; i < n;)
@@ -72,7 +74,7 @@ void gnomeSort(vector<Stolb>stolbs)
 		else
 		{
 			move_swap(stolbs, i - 1, i);
-			stolbs[i].VisSt(); //��������
+			stolbs[i].VisSt(); //расчёска
 			stolbs[i - 1].VisSt();
 			i--;
 			if (i == 0)
@@ -91,12 +93,13 @@ void gnomeSort(vector<Stolb>stolbs)
 
 void bogoSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: обезьяньей сортировкой";
 	int n = stolbs.size();
 	while (!isSorted(stolbs))
 	{
 		for (int i = n - 1; i >= 1; i--)
 		{
-			int j = rand() % (i + 1);  // j ����������� [0;i];
+			int j = rand() % (i + 1);  // j принадлежит [0;i];
 			stolbs[i].VisRed();
 			stolbs[j].VisRed();
 			Sleep(20);
@@ -115,6 +118,7 @@ void bogoSort(vector<Stolb>stolbs)
 
 void brushSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: сортировкой расческой";
 	double factor = 1.2473309;
 	int step = stolbs.size() - 1;
 	while (step >= 1)
@@ -143,6 +147,7 @@ void brushSort(vector<Stolb>stolbs)
 
 void shakeSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: сортировкой встряской";
 	int left = 0;
 	int right = stolbs.size() - 1;
 	while (left <= right)
@@ -185,6 +190,7 @@ void shakeSort(vector<Stolb>stolbs)
 
 void selectionSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: сортировкой вставками";
 	for (int i = 0; i < stolbs.size() - 1; i++)
 	{
 		int mn = i;
@@ -324,6 +330,7 @@ void mergeRec(vector<Stolb>& stolbs, int start, int end)
 
 void mergeSort(vector<Stolb>stolbs)
 {
+	cout << "Ваш массив сортируется: сортировкой слиянием";
 	mergeRec(stolbs, 0, stolbs.size() - 1);
 	for (int i = 0; i < stolbs.size(); i++)
 	{
@@ -336,20 +343,20 @@ int main()
 {
 	srand((unsigned)time(0));
 	//SetConsoleTitle((LPCWSTR)"Program");
-	system("mode con cols=150 lines=35"); //���������� ������ ���� � �����������
+	system("mode con cols=150 lines=35"); //Установить размер окна в знакоместах
 	HANDLE HandleCons = ::GetStdHandle(STD_OUTPUT_HANDLE);
-	HWND hWnd = GetConsoleWindow(); //�������� ������ �� ����
+	HWND hWnd = GetConsoleWindow(); //Получить ссылку на окно
 	Graphics::InitGraphics(hWnd);
 	Sleep(50);
-	int wid = 1600; //Graphics::GetWid();
-	int heg = 835; //Graphics::GetHeg();
+	int wid = Graphics::GetWid(); // Для Кости: int wid = 1600
+	int heg = Graphics::GetHeg(); // Для Кости: int heg = 835
 	setlocale(LC_ALL, "RUS");
-	cout << "������� ������ ��������� ������� (�� 5 �� 100): ";
+	cout << "Введите размер исходного массива (от 5 до 100): ";
 	int n;
 	cin >> n;
-	while(n > 100 || n < 5)
+	while (n > 100 || n < 5)
 	{
-		cout << "������ �� ������� ������, ������� n � ���������� [5;100]\n";
+		cout << "Ошибка во входных данных, введите n в промежутке [5;100]\n";
 		cin >> n;
 	}
 	vector<int>v(n);
@@ -362,19 +369,19 @@ int main()
 		}
 		for (int i = n - 1; i >= 1; i--)
 		{
-			int j = rand() % (i + 1);  // j ����������� [0;i]
+			int j = rand() % (i + 1);  // j принадлежит [0;i]
 			swap(v[i], v[j]);
 		}
-		cout << "���������� ������:\n";
+		cout << "Полученный массив:\n";
 		for (int i = 0; i < n; i++)
 		{
 			cout << v[i] << ' ';
 		}
 		cout << '\n';
-		cout << "���������������� ������?\n";
-		cout << "1 - �������� � ���������� � ������ ����������\n";
-		cout << "2 - ������������� ����� ������\n";
-		cout << "0 - ����� �� ���������\n";
+		cout << "Перегенерировать массив?\n";
+		cout << "1 - Оставить и приступить к выбору сортировки\n";
+		cout << "2 - Сгенерировать новый массив\n";
+		cout << "0 - Выход из программы\n";
 		char ch = _getch();
 		switch (ch)
 		{
@@ -398,24 +405,59 @@ int main()
 		stolbs[i].set(x, heg, wid, n, y, v[i]);
 		x += wid / n;
 	}
-	//	cout << "�������� ����������\n";
+	system("cls");
+	cout << "Выберите сортировку. Подробную информацию о сортировках смотрите в документации.\n";
+	cout << "1 - пузырьковая сортировка\n";
+	cout << "2 - сортировка встряской\n";
+	cout << "3 - сортировка вставками\n";
+	cout << "4 - гномья сортировка\n";
+	cout << "5 - сортировка расческой\n";
+	cout << "6 - сортировка слиянием\n";
+	cout << "7 - обезьянья сортировка\n";
+	void (*chosenSort)(vector<Stolb>) = bubleSort;
+	do
+	{
+		char ch = _getch();
+		switch (ch)
+		{
+		case '1':
+			chosenSort = bubleSort;
+			break;
+		case '2':
+			chosenSort = shakeSort;
+			break;
+		case '3':
+			chosenSort = selectionSort;
+			break;
+		case '4':
+			chosenSort = gnomeSort;
+			break;
+		case '5':
+			chosenSort = brushSort;
+			break;
+		case '6':
+			chosenSort = mergeSort;
+			break;
+		case '7':
+			chosenSort = bogoSort;
+			break;
+		default:
+			cout << "Нажмите цифру от 1 до 7!\n";
+			break;
+		
+		}
+		if (ch <= '7' && ch >= '1')
+			break;
+	} while (1);
 	system("cls");
 	Sleep(100);
-	cout << "�������� ������:\n";
+	cout << "Исходный массив:\n";
 	for (int i = 0; i < n; i++)
 	{
 		cout << v[i] << ' ';
 	}
 	cout << '\n';
 	draw(stolbs);
-	/* ���������� ��������� */
-	//bubbleSort(stolbs);
-	//bubleSort(stolbs);
-	//bogoSort(stolbs);
-	brushSort(stolbs);
-	//selectionSort(stolbs);
-	//mergeSort(stolbs);
-	//while (stolbs[0].right != stolbs[1].right)
-	//	make_equal(stolbs[0], stolbs[1]);
+	chosenSort(stolbs);
 	_getch();
 }
